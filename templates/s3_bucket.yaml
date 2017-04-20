@@ -1,0 +1,40 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Data Lake S3 bucket'
+Parameters:
+  ProjectCode:
+    Description: 'Data project code, e.g. dlp001'
+    Type: String
+  BucketName:
+    Description: 'Name for the S3 bucket'
+    Type: String
+  DataClassification:
+    Description: 'Data classification, e.g. Unrestricted, Confidential'
+    Type: String
+Resources:  
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Join ["", [ bt-dl-, !Ref ProjectCode, !Ref BucketName ]]
+      Tags:
+        - Key: Business Unit
+          Value: DataLake2.0
+        - Key: Project Code
+          Value: !Ref ProjectCode
+        - Key: Data Classification
+          Value: !Ref DataClassification
+  S3BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Statement:
+        - Action:
+          - 's3:PutObject'
+          Effect: Allow
+          Resource:
+          - !Sub 'arn:aws:s3:::${S3Bucket}/*'
+          Principal: '*'
+          Condition: 
+            StringNotEquals: 
+              s3:x-amz-server-side-encryption: "aws:kms"

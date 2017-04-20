@@ -1,0 +1,55 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Lambda role for the data lake custom authorizer function to assume'
+Parameters:
+  DynamoDBTableName:
+    Description: 'Name of the DynamoDb table used as the authorization repository'
+    Type: String
+Resources: 
+  Role: 
+    Type: "AWS::IAM::Role"
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/datalake/"
+  RolePolicies: 
+    Type: "AWS::IAM::Policy"
+    Properties: 
+      PolicyName: "root"
+      Roles:
+        Ref: "Role"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: arn:aws:logs:eu-west-1:580501780015:log-group:/aws/lambda/*:*:*
+          - Effect: Allow
+            Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DetachNetworkInterface
+              - ec2:DeleteNetworkInterface
+            Resource: "*"
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: DynamoDBAccess
+      Roles:
+        Ref: "Role"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+            Resource: !Join [ ",", [ "arn:aws:dynamodb:eu-west-1:580501780015:table/", !Ref DynamoDBTableName ] ]
