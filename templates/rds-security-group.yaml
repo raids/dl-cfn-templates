@@ -1,0 +1,28 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Security group'
+Parameters:
+  SecurityGroupName:
+    Description: 'Name for the SG'
+    Type: String
+  VpcId:
+    Description: 'VPC ID for the SG'
+    Type: String
+Type: "AWS::EC2::SecurityGroup"
+Properties: 
+  GroupName: 
+    Ref: "SecurityGroupName"
+  GroupDescription: 
+    Ref: "SecurityGroupName"
+  SecurityGroupEgress:
+    - IpProtocol: tcp
+      FromPort: '-1'
+      ToPort: '-1'
+      CidrIp: 127.0.0.1/32
+  SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: '5432'
+      ToPort: '5432'
+      CidrIp: 10.0.0.0/8
+  VpcId: 
+    Ref: "VpcId"
