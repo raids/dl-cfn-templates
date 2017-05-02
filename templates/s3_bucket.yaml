@@ -16,6 +16,8 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Join ["", [ bt-dl-, !Ref ProjectCode, !Ref BucketName ]]
+      VersioningConfiguration:
+        Status: Enabled
       Tags:
         - Key: Business Unit
           Value: DataLake2.0
