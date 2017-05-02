@@ -1,0 +1,65 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'RDS Instance'
+Parameters:
+  RDSInstanceName:
+    Description: 'Name for the RDS Instance'
+    Type: String
+  RDSDBEngine:
+    Description: 'Data classification, e.g. Unrestricted, Confidential'
+    Type: String
+    Default: postgres
+    AllowedValues: 
+      - mysql
+      - postgres
+      - mariadb
+      - aurora
+  RDSAllocatedStorage:
+    Description: 'Allocated storage for the RDS instance'
+    Type: String
+    Default: "100"
+  RDSInstanceClass:
+    Description: 'Instance type for the RDS instance'
+    Type: String
+    Default: "db.t2.large"
+  RDSDBUser:
+    Description: 'Database username'
+    Type: String
+    Default: dbuser
+  RDSDBPassword:
+    Description: 'Database admin user password'
+    Type: String
+    NoEcho: true
+    MinLength: 1
+    MaxLength: 41
+    AllowedPattern: "[a-zA-Z0-9]*"
+  RDSDBSubnetGroup:
+    Description: 'Database admin user password'
+    Type: String
+  RDSSecurityGroups:
+    Description: 'Security groups to attach to the RDS instance'
+    Type: CommaDelimitedList
+    Default: sg-94d8baed
+Resources:
+  RDSInstance: 
+    Type: "AWS::RDS::DBInstance"
+    Properties: 
+      DBName: 
+        Ref: "RDSInstanceName"
+      AllocatedStorage: 
+        Ref: "RDSAllocatedStorage"
+      DBInstanceClass: 
+        Ref: "RDSInstanceClass"
+      Engine: 
+        Ref: "RDSDBEngine"
+      StorageEncrypted: true
+      MasterUsername: 
+        Ref: "RDSDBUser"
+      MasterUserPassword: 
+        Ref: "RDSDBPassword"
+      DBSubnetGroupName:
+        Ref: "RDSDBSubnetGroup"
+      MultiAZ: true
+      VPCSecurityGroups:
+        Ref: "RDSSecurityGroups"
+    DeletionPolicy: "Snapshot"
