@@ -6,7 +6,7 @@ Parameters:
     Description: 'Name for the RDS Instance'
     Type: String
   RDSDBEngine:
-    Description: 'Data classification, e.g. Unrestricted, Confidential'
+    Description: 'DB Engine for the RDS instance'
     Type: String
     Default: postgres
     AllowedValues: 
